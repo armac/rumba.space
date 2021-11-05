@@ -1,0 +1,597 @@
+<html>
+
+<head>
+    <title>AV</title>
+</head>
+<script src="js/jquery-1.11.1.min.js"></script>
+<script src="js/imageMapResizer.min.js"></script>
+<script src="js/lists.js"></script>
+<link src="js/lcd.css" rel="stylesheet"></link>
+<link src="js/lcd.scss" rel="stylesheet"></link>
+<style>
+    html, body {
+
+    overflow: hidden;
+    height: min(100vh,100vw);
+    }
+@font-face {
+  font-family: "LEDBoard";
+  src: url(Content/LEDBDREV.TTF) format("truetype");
+}
+    #TV {
+    height: min(100vh,100vw);
+    width: 100vh;
+    text-align: center;
+    object-fit: fill;
+
+}
+#tvimg {
+    position: fixed;
+margin: auto;
+left: 50%;
+top: 0;
+margin-left: max(-88.9vh,-88.9vw);
+    height: min(100vh,100vw);
+    width: min(177.8vh,177.8vw);
+text-align: center;
+z-index: 4;
+}
+#tvimgbl {
+    position: fixed;
+margin: auto;
+left: 50%;
+top: 0;
+margin-left: max(-88.9vh,-88.9vw);
+    height: min(100vh,100vw);
+    width: min(177.8vh,177.8vw);
+text-align: center;
+z-index: 2;
+
+}
+#tvlight {
+    position: fixed;
+margin: auto;
+left: 50%;
+top: 0;
+margin-left: max(-88.9vh,-88.9vw);
+    height: min(100vh,100vw);
+    width: min(177.8vh,177.8vw);
+z-index: 2;
+opacity: 1;
+}
+#tvlbeam {
+    position: fixed;
+margin: auto;
+left: 50%;
+top: 0;
+margin-left: max(-88.9vh,-88.9vw);
+    height: min(100vh,100vw);
+    width: min(177.8vh,177.8vw);
+z-index: 3;
+}
+#tvid {
+    position: fixed;
+margin: auto;
+left: 50%;
+top: min(5vh,5vw);
+margin-left: max(-40vh,-40vw);
+z-index: 1;
+object-fit: fill;
+}
+#audiotext {
+    position: absolute;
+margin: auto;
+width: 60vh;
+height: min(7.5vh,7.5vw);
+bottom: min(7.5vh,7.5vw);
+font-family: Verdana,sans-serif;
+left: 1vw;
+right: 1vw;
+text-align: center;
+z-index: 7;
+}
+table {
+    width:  80%;
+    position: absolute;
+margin: auto;
+text-align: center;
+font-size: .7vh;
+
+}
+tr {
+    width: min(60vh,60vw);
+    max-width: 600px;
+    height: min(.5vh,.5vw);
+margin: auto;
+}
+td {
+    width: min(1vh,1vw);
+    height: min(.5vh,.5vw);
+    padding: 0px;
+margin: auto;
+color: #08EFFF;
+text-shadow: 0px 0px 4px #08F0C2;
+}
+audio {
+    filter: sepia(0%) saturate(70%) grayscale(1) contrast(99%) invert(100%);
+    width: 640px;
+    height: 80px;
+    position: absolute;
+margin: auto;
+bottom: 87px;
+left: 1vw;
+right: 1vw;
+z-index: 4;
+}
+#play_toggle {
+    position: absolute;
+    left: 1vw;
+    right: 1vw;
+    z-index: 5;
+    margin: auto;
+    bottom: 125px;
+    width: 721px;
+    height: 50px;
+}
+
+
+</style>
+<script>
+    var char = {
+c65: "...###.....##...##..##.....##.#########.##.....##.##.....##...........",
+c66: "#######..##....##.########.##....##.##....##.#######...........",
+c67: "...####....##....##.##........##.........##....##....####.............",
+c68: "######....##....##..##.....##.##.....##.##....##..######..............",
+c69: "#######.##......####....##......##......#######.........",
+c70: "#######.##......####....##......##......##..............",
+c71: "...####....##....##.##........##....###..##....##....####.............",
+c72: "##....##.##....##.##....##.########.##....##.##....##..........",
+c73: "####..##...##...##...##..####......",
+c74: ".....###.......##.......##.##....##.##....##..#####............",
+c75: "##....##.##...##..##..##...######...##...##..##....##..........",
+c76: "##......##......##......##......##......#######.........",
+c77: "###.....###.####...####.##.##.##.##.##..###..##.##.......##.##.......##.............",
+c78: "###....##.####...##.##.##..##.##..##.##.##...####.##....###...........",
+c79: "...####.....##....##..##......##.##......##..##....##.....####...............",
+c80: "#######..##....##.##....##.######...##.......##................",
+c81: "...####.....##....##..##......##.##...#..##..##...###.....####.#...........##",
+c82: "#######...##....##..##....##..#######...##....##..##.....##...........",
+c83: ".#####..##...##..##........##...##...##..#####..........",
+c84: "########....##.......##.......##.......##.......##.............",
+c85: "##......##.##......##.##......##.##......##..##....##.....####...............",
+c86: "##....##.##....##.##....##..##..##....####......##.............",
+c87: "##....##....##.##....##....##.##....##....##..##..####..##....####..####......##....##...................",
+c88: "##.....##..##...##....##.##......###......##.##....##...##............",
+c89: "##....##.##....##..##..##.....##.......##.......##.............",
+c90: "#######......##.....##.....#.....##.....#######.........",
+c97: ".........#####..##...##.##...##.##...##..####.#.........",
+c98: "##......######..##...##.##...##.##...##.######..........",
+c99: ".........#####..##...##.##......##.......#####..........",
+c100: ".....##..######.##...##.##...##.##...##..######.........",
+c101: ".........#####..##....#.#######.##.......#####..........",
+c102: "..####..##....#####..##.....##.....##............",
+c103: ".........####...##..##..##...#...######.#....##..#####..",
+c104: "##......##.###..###...#.##....#.##....#.##....#.........",
+c105: ".##........##...##...##..####......",
+c106: ".....##..............##......##.##...##..##..##...####..",
+c107: "##.....##...#.##..#..####...##..#..##...#........",
+c108: "###....##....##....##....##...#####.......",
+c109: "..........##.##.##..###.##..#.##..##..#.##..##..#.##......#...........",
+c110: "........##.###..###...#.##....#.##....#.##....#.........",
+c111: ".........#####..##...##.##...##.##...##..#####..........",
+c112: ".............#####.....#...##...##...##...##...##.#.#####...####......",
+c113: "...........#####....##...#....##...##...##...##.....#####.#......####.",
+c114: "........##.###..###...#.##......##......##..............",
+c115: "........####..##...#...##...#...##..####.........",
+c116: ".##.....##....####....##.....##..#...###.........",
+c117: "........##....#.##....#.##....#.###...#.##.###..........",
+c118: "........##....#.##....#.##...#...##.#.....##............",
+c119: "...........##.......#.##..##...#.##..##...#..##.##..#....##..##..............",
+c120: ".......#....#..##.#....##....#.##..#...##........",
+c121: ".........#...##..#...##..#...##...#####.#....##..#####..",
+c122: ".......######......#....##...##....######........",
+c48: "...###.#...##...##..##...#.##.##..#..##..###..##....####.....#........",
+c49: "...##...####.....##.....##.....##...#####........",
+c50: "..#####..##....##.......##.....###....###....########..........",
+c51: "..#####..##....##.......##.....###..##....##..######...........",
+c52: ".....###....##.##..##...##.########.......##.......##..........",
+c53: "#######..##.......#######........##.##....##..######...........",
+c54: ".######..##.......#######..##....##.##....##..######...........",
+c55: "#######......##.....##.....##.....##.....##.............",
+c56: ".######..##....##..######..##....##.##....##..######...........",
+c57: ".######..##....##.##....##..#######.#.....##..######...........",
+c48: "...###.#...##...##..##...#.##.##..#..##..###..##....####.....#........",
+c45: "..................#####...................",
+c95: "........................................########........",
+c36: ".....#####......##.#.##......###...........##.......##.#.##......#####.........#....",
+c33: "##.##.##.##....##.##.",
+c39: ".##..##.##..................",
+c44: ".................##..##.##..",
+c40: "...##..##...##....##.....##......##.......",
+c41: "##......##.....##....##...##..##..........",
+c46: "............##.##....",
+c32: "............................"
+};
+
+var txt = "--------------------------------------------";
+var pos = 0;
+var spc = 0;
+var scroll = [];
+for(j=0; j<7; j++){
+  scroll[j] = [0,0,0,0,0];
+}
+
+for(i=0; i<txt.length; i++){
+  t = 'c'+txt.charCodeAt(i);
+    w = char[t].length / 7;
+    for(j=0; j<7; j++){
+      for(v=0; v<w; v++){
+        if(char[t].charAt(j*w+v) == "#")scroll[j].push(0.5);
+        else scroll[j].push(0);
+      }
+   }
+}
+var l = scroll[0].length;
+    setInterval(function() {
+for(j=0; j<7; j++){
+  scroll[j] = [0,0,0,0,0];
+}
+
+for(i=0; i<txt.length; i++){
+  t = 'c'+txt.charCodeAt(i);
+    w = char[t].length / 7;
+    for(j=0; j<7; j++){
+      for(v=0; v<w; v++){
+        if(char[t].charAt(j*w+v) == "#")scroll[j].push(0.5);
+        else scroll[j].push(0);
+      }
+   }
+}
+ l = scroll[0].length;
+      for (y = 0; y < 7; y++) {
+        for (x = 0; x < 46; x++){
+            yst = y.toString();
+            xst = x.toString();
+            cid = "r" + yst.padStart(2, '0') + "c" + xst.padStart(2, '0');
+          if(pos >= l){
+          document.getElementById(cid).style.opacity=0;
+            } else {
+          document.getElementById(cid).style.opacity=scroll[y][(x+pos)%l];
+      }
+        }
+      }
+      pos++;
+      if(pos >= l)pos=0;
+   }, 200);
+
+</script>
+
+<body style="background-color: #000;">
+    <div id="TV">
+       <img id="tvimg" src='Content/semsysf.png' usemap="#image-map">
+       <img id="tvimgbl" src='Content/system.png' usemap="#image-map">
+       <div id="tvlbeam">
+<svg id="tvl" version="1.0" xmlns="http://www.w3.org/2000/svg"
+ height="min(100vh,100vw)" viewBox="0 0 1920.000000 1080.000000"
+ preserveAspectRatio="xMidYMid meet">
+
+  <mask id="myMask">
+    <!-- Everything under a white pixel will be visible -->
+    <path d="M0 5400 l0 -5400 9600 0 9600 0 0 5400 0 5400 -9600 0 -9600 0 0
+-5400z m10580 4640 c412 -9 824 -24 980 -35 36 -2 112 -7 170 -11 628 -35
+1573 -123 1664 -154 37 -13 92 -55 106 -81 19 -35 42 -317 44 -549 1 -124 5
+-231 9 -237 13 -21 17 -118 25 -613 9 -632 3 -1070 -22 -1713 -3 -83 -11 -314
+-16 -512 -6 -198 -13 -389 -15 -425 -3 -36 -9 -175 -14 -310 -12 -288 -46
+-711 -59 -737 -6 -10 -16 -54 -23 -98 -6 -44 -20 -96 -31 -115 -10 -19 -18
+-40 -18 -47 0 -43 -59 -52 -630 -98 -96 -8 -209 -19 -250 -24 -41 -6 -156 -15
+-255 -21 -99 -6 -243 -15 -320 -20 -77 -5 -214 -12 -305 -15 -91 -3 -228 -10
+-305 -15 -704 -49 -2019 -59 -3080 -25 -88 3 -187 8 -220 10 -99 7 -415 24
+-670 35 -132 6 -316 18 -410 26 -93 7 -200 14 -237 14 -37 0 -89 4 -115 10
+-26 5 -133 16 -238 25 -443 36 -594 52 -612 64 -20 13 -62 129 -73 200 -6 40
+-15 82 -21 93 -16 30 -48 449 -54 713 -4 127 -10 248 -15 270 -5 22 -12 153
+-15 290 -3 138 -8 288 -10 335 -2 47 -7 193 -11 325 -3 132 -10 355 -15 495
+-13 365 -14 725 -6 1280 7 492 8 525 25 640 5 36 9 129 7 206 -1 80 6 224 16
+330 10 104 18 192 19 196 1 16 56 71 89 87 20 10 81 24 136 30 55 6 132 16
+170 22 68 9 384 41 595 59 58 5 242 18 410 29 168 12 334 23 370 26 257 19
+673 34 1235 45 297 6 563 12 590 14 73 6 892 -3 1405 -14z" fill="white"/>
+
+    <!-- Everything under a black pixel will be invisible -->
+    <path d="M9175 10054 c-27 -2 -293 -8 -590 -14 -562 -11 -978 -26 -1235 -45
+-36 -3 -202 -14 -370 -26 -168 -11 -352 -24 -410 -29 -211 -18 -527 -50 -595
+-59 -38 -6 -115 -16 -170 -22 -55 -6 -116 -20 -136 -30 -33 -16 -88 -71 -89
+-87 -1 -4 -9 -92 -19 -196 -10 -106 -17 -250 -16 -330 2 -77 -2 -170 -7 -206
+-17 -115 -18 -148 -25 -640 -8 -555 -7 -915 6 -1280 5 -140 12 -363 15 -495 4
+-132 9 -278 11 -325 2 -47 7 -197 10 -335 3 -137 10 -268 15 -290 5 -22 11
+-143 15 -270 6 -264 38 -683 54 -713 6 -11 15 -53 21 -93 11 -71 53 -187 73
+-200 18 -12 169 -28 612 -64 105 -9 212 -20 238 -25 26 -6 78 -10 115 -10 37
+0 144 -7 237 -14 94 -8 278 -20 410 -26 255 -11 571 -28 670 -35 33 -2 132 -7
+220 -10 1061 -34 2376 -24 3080 25 77 5 214 12 305 15 91 3 228 10 305 15 77
+5 221 14 320 20 99 6 214 15 255 21 41 5 154 16 250 24 571 46 630 55 630 98
+0 7 8 28 18 47 11 19 25 71 31 115 7 44 17 88 23 98 13 26 47 449 59 737 5
+135 11 274 14 310 2 36 9 227 15 425 5 198 13 429 16 512 25 643 31 1081 22
+1713 -8 495 -12 592 -25 613 -4 6 -8 113 -9 237 -2 232 -25 514 -44 549 -14
+26 -69 68 -106 81 -91 31 -1036 119 -1664 154 -58 4 -134 9 -170 11 -360 26
+-2185 64 -2385 49z" fill="black"/>
+  </mask>
+<filter id="A">
+<feGaussianBlur stdDeviation="300" />
+</filter>
+<defs>
+      <radialGradient id="tvlgrad"
+            cx="0.5" cy="0.65" r=".6" fx="0.5" fy="0.5" gradientsUnits="objectBoundingBox" spreadMethod="pad">
+        <stop  id="tvlighting" offset="0%" stop-color="#FFFfff00"/>
+        <stop offset="100%" stop-color="#00000000"/>
+      </radialGradient>
+      <radialGradient id="tvlgrad2"
+            cx="0.5" cy="0.5" r=".7" fx="0.5" fy="0.5" gradientsUnits="objectBoundingBox" spreadMethod="pad">
+        <stop offset="0%" stop-color="#00000000"/>
+        <stop offset="50%" stop-color="#00000000"/>
+        <stop id="tv2lighting" offset="90%" stop-color="#FFFfff00"/>
+        <stop offset="100%" stop-color="#00000000"/>
+      </radialGradient>
+  </defs>
+<g transform="translate(0.000000,1080.000000) scale(0.100000,-0.100000)"
+fill="url(#tvlgrad)" stroke="none">
+<path  mask="url(#myMask)" d="M0 5400 l0 -5400 9600 0 9600 0 0 5400 0 5400 -9600 0 -9600 0 0
+-5400z m10580 4640 c412 -9 824 -24 980 -35 36 -2 112 -7 170 -11 628 -35
+1573 -123 1664 -154 37 -13 92 -55 106 -81 19 -35 42 -317 44 -549 1 -124 5
+-231 9 -237 13 -21 17 -118 25 -613 9 -632 3 -1070 -22 -1713 -3 -83 -11 -314
+-16 -512 -6 -198 -13 -389 -15 -425 -3 -36 -9 -175 -14 -310 -12 -288 -46
+-711 -59 -737 -6 -10 -16 -54 -23 -98 -6 -44 -20 -96 -31 -115 -10 -19 -18
+-40 -18 -47 0 -43 -59 -52 -630 -98 -96 -8 -209 -19 -250 -24 -41 -6 -156 -15
+-255 -21 -99 -6 -243 -15 -320 -20 -77 -5 -214 -12 -305 -15 -91 -3 -228 -10
+-305 -15 -704 -49 -2019 -59 -3080 -25 -88 3 -187 8 -220 10 -99 7 -415 24
+-670 35 -132 6 -316 18 -410 26 -93 7 -200 14 -237 14 -37 0 -89 4 -115 10
+-26 5 -133 16 -238 25 -443 36 -594 52 -612 64 -20 13 -62 129 -73 200 -6 40
+-15 82 -21 93 -16 30 -48 449 -54 713 -4 127 -10 248 -15 270 -5 22 -12 153
+-15 290 -3 138 -8 288 -10 335 -2 47 -7 193 -11 325 -3 132 -10 355 -15 495
+-13 365 -14 725 -6 1280 7 492 8 525 25 640 5 36 9 129 7 206 -1 80 6 224 16
+330 10 104 18 192 19 196 1 16 56 71 89 87 20 10 81 24 136 30 55 6 132 16
+170 22 68 9 384 41 595 59 58 5 242 18 410 29 168 12 334 23 370 26 257 19
+673 34 1235 45 297 6 563 12 590 14 73 6 892 -3 1405 -14z"/>
+</g>
+<g transform="translate(0.000000,1080.000000) scale(0.100000,-0.100000)"
+fill="url(#tvlgrad2)" stroke="none">
+<path  mask="url(#myMask)" filter="url(#A)" d="M8810 10659 c-514 -11 -1071 -29 -1280 -40 -536 -28 -1378 -94 -1630
+-129 -41 -5 -129 -17 -195 -25 -153 -20 -209 -36 -320 -93 -75 -38 -107 -63
+-196 -151 -163 -164 -205 -263 -235 -561 -9 -85 -20 -263 -24 -395 -5 -132
+-13 -307 -19 -390 -14 -222 -17 -1552 -4 -1873 7 -151 17 -450 23 -665 6 -216
+16 -480 21 -587 5 -107 14 -296 19 -420 13 -339 46 -723 69 -805 10 -38 22
+-90 26 -115 12 -82 36 -154 91 -268 83 -172 196 -281 361 -347 100 -41 202
+-54 753 -100 102 -9 209 -20 239 -25 30 -6 84 -10 120 -10 36 0 143 -7 236
+-14 94 -8 278 -20 410 -26 132 -6 350 -17 485 -25 828 -51 2763 -53 3465 -4
+77 5 248 14 380 19 132 5 305 14 385 19 80 5 224 14 320 20 96 7 213 16 260
+22 47 5 162 16 255 24 365 31 424 36 530 51 140 19 203 37 290 82 80 42 189
+140 234 211 52 81 121 247 137 328 9 43 24 114 35 158 44 180 75 743 113 2055
+9 316 21 615 27 664 13 102 3 1242 -13 1581 -5 116 -13 316 -17 445 -5 129
+-16 305 -24 390 -31 297 -73 398 -231 555 -174 173 -282 220 -596 260 -550 70
+-1552 143 -2285 165 -1012 30 -1529 34 -2215 19z"/>
+</g>
+</svg></div>
+        <map name="image-map">
+            <area target="_self" alt="Power" title="Power" href='#' onclick="power()" coords="559,759,35" shape="circle">
+            <area target="_self" alt="Vup" title="Vup" href='#' onclick="vup()" coords="1075,767,23" shape="circle">
+            <area target="_self" alt="Vdn" title="Vdn" href='#' onclick="vdn()" coords="1015,763,23" shape="circle">
+            <area target="_self" alt="Chup" title="Chup" href='#' onclick="chup()" coords="1227,767,23" shape="circle">
+            <area target="_self" alt="Chdn" title="Chdn" href='#' onclick="chdn()" coords="1171,767,23" shape="circle">
+            <area target="" alt="MusL" title="MusL" onclick="" coords="577,957,65" shape="circle">
+            <area target="" alt="MusR" title="MusR" onclick="" coords="1349,957,65" shape="circle">
+        </map>
+        <div  id="audiotext">
+        <table id="lcd" style="width:100%">
+<tr id="r00"><td id="r00c00">&#9632;</td><td id="r00c01">&#9632;</td><td id="r00c02">&#9632;</td><td id="r00c03">&#9632;</td><td id="r00c04">&#9632;</td><td id="r00c05">&#9632;</td><td id="r00c06">&#9632;</td><td id="r00c07">&#9632;</td><td id="r00c08">&#9632;</td><td id="r00c09">&#9632;</td><td id="r00c10">&#9632;</td><td id="r00c11">&#9632;</td><td id="r00c12">&#9632;</td><td id="r00c13">&#9632;</td><td id="r00c14">&#9632;</td><td id="r00c15">&#9632;</td><td id="r00c16">&#9632;</td><td id="r00c17">&#9632;</td><td id="r00c18">&#9632;</td><td id="r00c19">&#9632;</td><td id="r00c20">&#9632;</td><td id="r00c21">&#9632;</td><td id="r00c22">&#9632;</td><td id="r00c23">&#9632;</td><td id="r00c24">&#9632;</td><td id="r00c25">&#9632;</td><td id="r00c26">&#9632;</td><td id="r00c27">&#9632;</td><td id="r00c28">&#9632;</td><td id="r00c29">&#9632;</td><td id="r00c30">&#9632;</td><td id="r00c31">&#9632;</td><td id="r00c32">&#9632;</td><td id="r00c33">&#9632;</td><td id="r00c34">&#9632;</td><td id="r00c35">&#9632;</td><td id="r00c36">&#9632;</td><td id="r00c37">&#9632;</td><td id="r00c38">&#9632;</td><td id="r00c39">&#9632;</td><td id="r00c40">&#9632;</td><td id="r00c41">&#9632;</td><td id="r00c42">&#9632;</td><td id="r00c43">&#9632;</td><td id="r00c44">&#9632;</td><td id="r00c45">&#9632;</td></tr>
+<tr id="r01"><td id="r01c00">&#9632;</td><td id="r01c01">&#9632;</td><td id="r01c02">&#9632;</td><td id="r01c03">&#9632;</td><td id="r01c04">&#9632;</td><td id="r01c05">&#9632;</td><td id="r01c06">&#9632;</td><td id="r01c07">&#9632;</td><td id="r01c08">&#9632;</td><td id="r01c09">&#9632;</td><td id="r01c10">&#9632;</td><td id="r01c11">&#9632;</td><td id="r01c12">&#9632;</td><td id="r01c13">&#9632;</td><td id="r01c14">&#9632;</td><td id="r01c15">&#9632;</td><td id="r01c16">&#9632;</td><td id="r01c17">&#9632;</td><td id="r01c18">&#9632;</td><td id="r01c19">&#9632;</td><td id="r01c20">&#9632;</td><td id="r01c21">&#9632;</td><td id="r01c22">&#9632;</td><td id="r01c23">&#9632;</td><td id="r01c24">&#9632;</td><td id="r01c25">&#9632;</td><td id="r01c26">&#9632;</td><td id="r01c27">&#9632;</td><td id="r01c28">&#9632;</td><td id="r01c29">&#9632;</td><td id="r01c30">&#9632;</td><td id="r01c31">&#9632;</td><td id="r01c32">&#9632;</td><td id="r01c33">&#9632;</td><td id="r01c34">&#9632;</td><td id="r01c35">&#9632;</td><td id="r01c36">&#9632;</td><td id="r01c37">&#9632;</td><td id="r01c38">&#9632;</td><td id="r01c39">&#9632;</td><td id="r01c40">&#9632;</td><td id="r01c41">&#9632;</td><td id="r01c42">&#9632;</td><td id="r01c43">&#9632;</td><td id="r01c44">&#9632;</td><td id="r01c45">&#9632;</td></tr>
+<tr id="r02"><td id="r02c00">&#9632;</td><td id="r02c01">&#9632;</td><td id="r02c02">&#9632;</td><td id="r02c03">&#9632;</td><td id="r02c04">&#9632;</td><td id="r02c05">&#9632;</td><td id="r02c06">&#9632;</td><td id="r02c07">&#9632;</td><td id="r02c08">&#9632;</td><td id="r02c09">&#9632;</td><td id="r02c10">&#9632;</td><td id="r02c11">&#9632;</td><td id="r02c12">&#9632;</td><td id="r02c13">&#9632;</td><td id="r02c14">&#9632;</td><td id="r02c15">&#9632;</td><td id="r02c16">&#9632;</td><td id="r02c17">&#9632;</td><td id="r02c18">&#9632;</td><td id="r02c19">&#9632;</td><td id="r02c20">&#9632;</td><td id="r02c21">&#9632;</td><td id="r02c22">&#9632;</td><td id="r02c23">&#9632;</td><td id="r02c24">&#9632;</td><td id="r02c25">&#9632;</td><td id="r02c26">&#9632;</td><td id="r02c27">&#9632;</td><td id="r02c28">&#9632;</td><td id="r02c29">&#9632;</td><td id="r02c30">&#9632;</td><td id="r02c31">&#9632;</td><td id="r02c32">&#9632;</td><td id="r02c33">&#9632;</td><td id="r02c34">&#9632;</td><td id="r02c35">&#9632;</td><td id="r02c36">&#9632;</td><td id="r02c37">&#9632;</td><td id="r02c38">&#9632;</td><td id="r02c39">&#9632;</td><td id="r02c40">&#9632;</td><td id="r02c41">&#9632;</td><td id="r02c42">&#9632;</td><td id="r02c43">&#9632;</td><td id="r02c44">&#9632;</td><td id="r02c45">&#9632;</td></tr>
+<tr id="r03"><td id="r03c00">&#9632;</td><td id="r03c01">&#9632;</td><td id="r03c02">&#9632;</td><td id="r03c03">&#9632;</td><td id="r03c04">&#9632;</td><td id="r03c05">&#9632;</td><td id="r03c06">&#9632;</td><td id="r03c07">&#9632;</td><td id="r03c08">&#9632;</td><td id="r03c09">&#9632;</td><td id="r03c10">&#9632;</td><td id="r03c11">&#9632;</td><td id="r03c12">&#9632;</td><td id="r03c13">&#9632;</td><td id="r03c14">&#9632;</td><td id="r03c15">&#9632;</td><td id="r03c16">&#9632;</td><td id="r03c17">&#9632;</td><td id="r03c18">&#9632;</td><td id="r03c19">&#9632;</td><td id="r03c20">&#9632;</td><td id="r03c21">&#9632;</td><td id="r03c22">&#9632;</td><td id="r03c23">&#9632;</td><td id="r03c24">&#9632;</td><td id="r03c25">&#9632;</td><td id="r03c26">&#9632;</td><td id="r03c27">&#9632;</td><td id="r03c28">&#9632;</td><td id="r03c29">&#9632;</td><td id="r03c30">&#9632;</td><td id="r03c31">&#9632;</td><td id="r03c32">&#9632;</td><td id="r03c33">&#9632;</td><td id="r03c34">&#9632;</td><td id="r03c35">&#9632;</td><td id="r03c36">&#9632;</td><td id="r03c37">&#9632;</td><td id="r03c38">&#9632;</td><td id="r03c39">&#9632;</td><td id="r03c40">&#9632;</td><td id="r03c41">&#9632;</td><td id="r03c42">&#9632;</td><td id="r03c43">&#9632;</td><td id="r03c44">&#9632;</td><td id="r03c45">&#9632;</td></tr>
+<tr id="r04"><td id="r04c00">&#9632;</td><td id="r04c01">&#9632;</td><td id="r04c02">&#9632;</td><td id="r04c03">&#9632;</td><td id="r04c04">&#9632;</td><td id="r04c05">&#9632;</td><td id="r04c06">&#9632;</td><td id="r04c07">&#9632;</td><td id="r04c08">&#9632;</td><td id="r04c09">&#9632;</td><td id="r04c10">&#9632;</td><td id="r04c11">&#9632;</td><td id="r04c12">&#9632;</td><td id="r04c13">&#9632;</td><td id="r04c14">&#9632;</td><td id="r04c15">&#9632;</td><td id="r04c16">&#9632;</td><td id="r04c17">&#9632;</td><td id="r04c18">&#9632;</td><td id="r04c19">&#9632;</td><td id="r04c20">&#9632;</td><td id="r04c21">&#9632;</td><td id="r04c22">&#9632;</td><td id="r04c23">&#9632;</td><td id="r04c24">&#9632;</td><td id="r04c25">&#9632;</td><td id="r04c26">&#9632;</td><td id="r04c27">&#9632;</td><td id="r04c28">&#9632;</td><td id="r04c29">&#9632;</td><td id="r04c30">&#9632;</td><td id="r04c31">&#9632;</td><td id="r04c32">&#9632;</td><td id="r04c33">&#9632;</td><td id="r04c34">&#9632;</td><td id="r04c35">&#9632;</td><td id="r04c36">&#9632;</td><td id="r04c37">&#9632;</td><td id="r04c38">&#9632;</td><td id="r04c39">&#9632;</td><td id="r04c40">&#9632;</td><td id="r04c41">&#9632;</td><td id="r04c42">&#9632;</td><td id="r04c43">&#9632;</td><td id="r04c44">&#9632;</td><td id="r04c45">&#9632;</td></tr>
+<tr id="r05"><td id="r05c00">&#9632;</td><td id="r05c01">&#9632;</td><td id="r05c02">&#9632;</td><td id="r05c03">&#9632;</td><td id="r05c04">&#9632;</td><td id="r05c05">&#9632;</td><td id="r05c06">&#9632;</td><td id="r05c07">&#9632;</td><td id="r05c08">&#9632;</td><td id="r05c09">&#9632;</td><td id="r05c10">&#9632;</td><td id="r05c11">&#9632;</td><td id="r05c12">&#9632;</td><td id="r05c13">&#9632;</td><td id="r05c14">&#9632;</td><td id="r05c15">&#9632;</td><td id="r05c16">&#9632;</td><td id="r05c17">&#9632;</td><td id="r05c18">&#9632;</td><td id="r05c19">&#9632;</td><td id="r05c20">&#9632;</td><td id="r05c21">&#9632;</td><td id="r05c22">&#9632;</td><td id="r05c23">&#9632;</td><td id="r05c24">&#9632;</td><td id="r05c25">&#9632;</td><td id="r05c26">&#9632;</td><td id="r05c27">&#9632;</td><td id="r05c28">&#9632;</td><td id="r05c29">&#9632;</td><td id="r05c30">&#9632;</td><td id="r05c31">&#9632;</td><td id="r05c32">&#9632;</td><td id="r05c33">&#9632;</td><td id="r05c34">&#9632;</td><td id="r05c35">&#9632;</td><td id="r05c36">&#9632;</td><td id="r05c37">&#9632;</td><td id="r05c38">&#9632;</td><td id="r05c39">&#9632;</td><td id="r05c40">&#9632;</td><td id="r05c41">&#9632;</td><td id="r05c42">&#9632;</td><td id="r05c43">&#9632;</td><td id="r05c44">&#9632;</td><td id="r05c45">&#9632;</td></tr>
+<tr id="r06"><td id="r06c00">&#9632;</td><td id="r06c01">&#9632;</td><td id="r06c02">&#9632;</td><td id="r06c03">&#9632;</td><td id="r06c04">&#9632;</td><td id="r06c05">&#9632;</td><td id="r06c06">&#9632;</td><td id="r06c07">&#9632;</td><td id="r06c08">&#9632;</td><td id="r06c09">&#9632;</td><td id="r06c10">&#9632;</td><td id="r06c11">&#9632;</td><td id="r06c12">&#9632;</td><td id="r06c13">&#9632;</td><td id="r06c14">&#9632;</td><td id="r06c15">&#9632;</td><td id="r06c16">&#9632;</td><td id="r06c17">&#9632;</td><td id="r06c18">&#9632;</td><td id="r06c19">&#9632;</td><td id="r06c20">&#9632;</td><td id="r06c21">&#9632;</td><td id="r06c22">&#9632;</td><td id="r06c23">&#9632;</td><td id="r06c24">&#9632;</td><td id="r06c25">&#9632;</td><td id="r06c26">&#9632;</td><td id="r06c27">&#9632;</td><td id="r06c28">&#9632;</td><td id="r06c29">&#9632;</td><td id="r06c30">&#9632;</td><td id="r06c31">&#9632;</td><td id="r06c32">&#9632;</td><td id="r06c33">&#9632;</td><td id="r06c34">&#9632;</td><td id="r06c35">&#9632;</td><td id="r06c36">&#9632;</td><td id="r06c37">&#9632;</td><td id="r06c38">&#9632;</td><td id="r06c39">&#9632;</td><td id="r06c40">&#9632;</td><td id="r06c41">&#9632;</td><td id="r06c42">&#9632;</td><td id="r06c43">&#9632;</td><td id="r06c44">&#9632;</td><td id="r06c45">&#9632;</td></tr>
+</table></div>
+        <video id="tvid" style="width: min(80vh,80vw);height:min(58vh,58vw);" poster='Content/noload.png' preload="auto" autoplay playsinline muted>
+            <source src="Content/tvonf.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+
+        </video>
+        <audio id='audio.wav' src='Content/tvon.mp3' autoplay></audio>
+    </div>
+    <canvas id="my_canvas" style="display:none;width=1px" ></canvas>
+    <script>
+    imageMapResize();
+    </script>
+    <script>
+    
+    // Main elements
+    var body = document.getElementById('tvlighting');
+    var body2 = document.getElementById('tv2lighting');
+    var my_video = document.getElementById('tvid');
+    var my_canvas = document.getElementById('my_canvas');
+    var my_canvas_context = my_canvas.getContext('2d');
+    
+    var update_bg = function(){
+        
+        // If the video isn't playing, don't loop
+        if(my_video.paused || my_video.ended){
+            return false;
+        }
+        
+        // Draw the current frame of the video onto the hidden canvas
+        my_canvas_context.drawImage(my_video, 0, 0, my_video.clientWidth/2, my_video.clientHeight/2);
+        
+        // Pull the image data from the canvas
+        var frame_data = my_canvas_context.getImageData(0, 0, my_video.clientWidth/2, my_video.clientHeight/2).data;
+        
+        // Get the length of the data, divide that by 4 to get the number of pixels
+        // then divide that by 4 again so we check the color of every 4th pixel
+        var frame_data_length = (frame_data.length / 4) / 4;
+        
+        // Loop through the raw image data, adding the rgb of every 4th pixel to rgb_sums
+        var pixel_count = 0;
+        var rgb_sums = [0, 0, 0];
+        for(var i = 0; i < frame_data_length; i += 4){
+            rgb_sums[0] += frame_data[i*4];
+            rgb_sums[1] += frame_data[i*4+1];
+            rgb_sums[2] += frame_data[i*4+2];
+            pixel_count++;
+        }
+        
+        // Average the rgb sums to get the average color of the frame in rgb
+        rgb_sums[0] = Math.floor(rgb_sums[0]/(pixel_count));
+        rgb_sums[1] = Math.floor(rgb_sums[1]/(pixel_count));
+        rgb_sums[2] = Math.floor(rgb_sums[2]/(pixel_count));
+        
+        // Set the background color to the new color
+        var new_rgb = 'rgba(' + rgb_sums.join(',') + ',200)';
+        body.setAttribute("stop-color",new_rgb);
+        body2.setAttribute("stop-color",new_rgb);
+        
+        // Update the rgb label
+        
+        // Repeat every 1/10th of a second
+        setTimeout(update_bg, 100);
+    }
+    
+    var init = function(){
+        // Update the size of the canvas to match the video
+        my_canvas.width = my_video.clientWidth/2;
+        my_canvas.height = my_video.clientHeight/2;
+        
+        // Start updating the bg color
+        update_bg();
+    }
+    
+    my_video.addEventListener('play', init);
+
+function rgbToHsl(r, g, b) {
+  r /= 255, g /= 255, b /= 255;
+
+  var max = Math.max(r, g, b), min = Math.min(r, g, b);
+  var h, s, l = (max + min) / 2;
+
+  if (max == min) {
+    h = s = 0; // achromatic
+  } else {
+    var d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+
+    switch (max) {
+      case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+      case g: h = (b - r) / d + 2; break;
+      case b: h = (r - g) / d + 4; break;
+    }
+
+    h /= 6;
+  }
+
+  return [ h, s, l ];
+}
+</script>
+</body>
+<script>
+
+var chan = 0;
+var cvids = vlist[0];
+var csongs = slist[0];
+var clist = [
+    [0, ""],
+    [1, "OP"],
+    [2, "ED"],
+    [3, "Previews"],
+    [4, "Badlands Rumba"],
+    [5, "Badlands Rumba (Director's Cut)"]
+];
+var vid = document.getElementById('tvid');
+vid.onended = function() {
+    var nx = getRandomInt(cvids.length);
+    var nxvid = cvids[nx];
+    var nxvsrc = nxvid[0];
+    if(chan >= 4){
+        audio.src = "Content/" + nxvsrc;
+    }
+    vid.src = "Content/" + nxvsrc;
+};
+var audio = document.getElementById('audio.wav');
+audio.onended = function() {
+    var nxs = getRandomInt(csongs.length);
+    var nxsong = csongs[nxs];
+    var nxssrc = nxsong[0];
+    setText(nxsong[2] + " - " + nxsong[3]);
+    if (chan < 4){
+        audio.src = "Content/" + nxssrc;
+    }
+};
+
+function getRandomInt(max) {
+    return Math.floor(Math.random() * max);
+}
+
+function power() {
+    if (vid.paused) {
+        if (audio.paused) {
+            vid.play();
+            audio.play();
+        } else {
+            audio.pause();
+        }
+    } else {
+        if (audio.paused) {
+            vid.pause();
+        } else {
+            vid.pause();
+            audio.pause();
+        }
+        vid.pause();
+    }
+
+}
+
+function setText(inptxt){
+    txt = inptxt;
+   scroll = [];
+for(j=0; j<7; j++){
+  scroll[j] = [0,0,0,0,0];
+}
+
+for(i=0; i<txt.length; i++){
+  t = 'c'+txt.charCodeAt(i);
+    w = char[t].length / 7;
+    for(j=0; j<7; j++){
+      for(v=0; v<w; v++){
+        if(char[t].charAt(j*w+v) == "#")scroll[j].push(0.5);
+        else scroll[j].push(0);
+      }
+   }
+}
+ l = scroll[0].length;
+ pos = 0;
+}
+function chup() {
+    chan = (chan + 1) % 6;
+    vnum = chan % vlist.length;
+    snum = chan % slist.length;
+    cvids = vlist[vnum];
+    csongs = slist[snum];
+    vid.src = "Content/chnch" + chan + ".mp4";
+    audio.src = "Content/tvon.mp3";
+
+}
+
+function chdn() {
+    chan = (chan + 5) % 6;
+    vnum = chan % vlist.length;
+    snum = chan % slist.length;
+    cvids = vlist[vnum];
+    csongs = slist[snum];
+    vid.src = "Content/chnch" + chan + ".mp4";
+    audio.src = "Content/tvon.mp3";
+}
+
+function vup() {
+    audio.volume = Math.min(audio.volume + 0.1, 1);
+}
+
+function vdn() {
+    audio.volume = Math.max(audio.volume - 0.1, 0);
+}
+</script>
+
+</html>

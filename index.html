@@ -1,0 +1,61 @@
+<html>
+
+<head>
+    <title>Rumbai</title>
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/rumba.js"></script>
+</head>
+
+<body style='background-color: #000000; font-family: sans-serif; font-size: 2vw; font-weight: bold; text-align: center; width: 100%; margin: auto;' onload='loadSong();'>
+    <link rel='icon' href='data:;base64,iVBORw0KGgo='>
+    <div style='position: fixed; right: 0px; bottom: 0px; z-index: 1; font-size: 1vw'>
+        <select id="RT">
+            <option value="01">01</option>
+            <option value="02">02</option>
+            <option value="03">03</option>
+            <option value="04">04</option>
+            <option value="05">05</option>
+            <option value="06">06</option>
+            <option value="07">07</option>
+            <option value="08">08</option>
+            <option value="09">09</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+            <option value="13">13</option>
+            <option value="14">14</option>
+        </select>
+        <select id="TS">
+            <option value="a">a</option>
+            <option value="b">b</option>
+            <option value="c">c</option>
+            <option value="d">d</option>
+        </select>
+        <select id="TN">
+            <option value="0">00</option>
+            <option value="1">01</option>
+            <option value="2">02</option>
+            <option value="3">03</option>
+            <option value="4">04</option>
+            <option value="5">05</option>
+            <option value="6">06</option>
+            <option value="7">07</option>
+            <option value="8">08</option>
+            <option value="9">09</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+            <option value="13">13</option>
+            <option value="14">14</option>
+            <option value="15">15</option>
+        </select>
+        <button>Load Song</button>
+    </div>
+    <img name='bg' id='bg' style="position: absolute; left: 0px; top: 0px; width: 100%" src='01a/align.png' \>
+    <img name='fg' id='fg' style="position: absolute; left: 0px; top: 0px; width: 100%" src='01a/item_0/align.png' \>
+    <iframe name="content" src="01a/item_0/index.html" style="position: absolute; left: 0px; top: 28px;" allowtransparency="true" border="0" scrolling="yes" width="100%" frameborder="0" height="90%" onLoad="chan(this.contentWindow.location.pathname);" id="rumbai"></iframe>
+    <script>
+    </script>
+</body>
+
+</html>
